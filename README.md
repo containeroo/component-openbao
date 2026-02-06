@@ -1,13 +1,13 @@
-# Commodore Component: vault
+# Commodore Component: openbao
 
-This is a [Commodore][commodore] Component for vault.
+This is a [Commodore][commodore] Component for OpenBao.
 
 This repository is part of Project Syn.
 For documentation on Project Syn and this component, see [syn.tools](https://syn.tools).
 
 ## Documentation
 
-The rendered documentation for this component is available on the [Commodore Components Hub](https://hub.syn.tools/vault).
+The rendered documentation for this component is available on the [Commodore Components Hub](https://hub.syn.tools/openbao).
 
 Documentation for this component is written using [Asciidoc][asciidoc] and [Antora][antora].
 It can be found in the [`docs`](docs) folder.

@@ -2,10 +2,10 @@ parameters:
   kapitan:
     dependencies:
       - type: helm
-        source: ${vault:charts:vault:source}
-        chart_name: vault
-        version: ${vault:charts:vault:version}
-        output_path: ${_base_directory}/helmcharts/v${vault:charts:vault:version}
+        source: ${openbao:charts:openbao:source}
+        chart_name: openbao
+        version: ${openbao:charts:openbao:version}
+        output_path: ${_base_directory}/helmcharts/v${openbao:charts:openbao:version}
     compile:
       - input_paths:
           - ${_base_directory}/component/app.jsonnet
@@ -14,14 +14,14 @@ parameters:
       - input_type: helm
         output_type: yaml
         input_paths:
-          - ${_base_directory}/helmcharts/v${vault:charts:vault:version}
-        output_path: ${_instance}/10_vault
-        helm_values: ${vault:helm_values}
+          - ${_base_directory}/helmcharts/v${openbao:charts:openbao:version}
+        output_path: ${_instance}/10_openbao
+        helm_values: ${openbao:helm_values}
         helm_params:
-          name: ${vault:name}
-          namespace: ${vault:namespace}
+          name: ${openbao:name}
+          namespace: ${openbao:namespace}
           api_versions: networking.k8s.io/v1/Ingress
-          kube_version: ${vault:kubernetes_version}
+          kube_version: ${openbao:kubernetes_version}
       - input_paths:
           - ${_base_directory}/component/main.jsonnet
           - ${_base_directory}/component/unseal.jsonnet
@@ -36,5 +36,5 @@ parameters:
     postprocess:
       filters:
         - type: jsonnet
-          path: ${_instance}/10_vault/vault/templates/
+          path: ${_instance}/10_openbao/openbao/templates/
           filter: postprocess/patch_podManagementPolicy.jsonnet

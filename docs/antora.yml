@@ -6,8 +6,8 @@
 # `component-` prefix removed.
 #
 
-name: vault
-title: vault
+name: openbao
+title: openbao
 version: master
 start_page: ROOT:index.adoc
 nav:

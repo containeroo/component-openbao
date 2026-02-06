@@ -13,8 +13,8 @@ parameters:
       s3_endpoint: null
     prometheus_push_gateway: null
 
-  _instance: vault
-  vault:
+  _instance: openbao
+  openbao:
     name: foobar
     ingress:
       annotations:

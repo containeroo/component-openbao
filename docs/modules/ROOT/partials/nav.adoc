@@ -1,5 +1,5 @@
 * xref:index.adoc[Home]
 * xref:tutorials/install.adoc[Installation]
 * xref:how-tos/lieutenant.adoc[Lieutenant Integration]
-* xref:how-tos/restore-from-backup.adoc[Restore Vault from Backup]
+* xref:how-tos/restore-from-backup.adoc[Restore OpenBao from Backup]
 * xref:references/parameters.adoc[Parameters]

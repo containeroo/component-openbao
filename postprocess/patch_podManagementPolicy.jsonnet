@@ -3,7 +3,7 @@
  */
 local com = import 'lib/commodore.libjsonnet';
 local inv = com.inventory();
-local params = inv.parameters.vault;
+local params = inv.parameters.openbao;
 
 local sts_file = std.extVar('output_path') + '/server-statefulset.yaml';
 

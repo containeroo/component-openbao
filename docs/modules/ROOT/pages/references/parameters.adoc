@@ -1,6 +1,6 @@
 = Parameters
 
-The parent key for all of the following parameters is `vault`.
+The parent key for all of the following parameters is `openbao`.
 
 == `namespace`
 
@@ -10,7 +10,7 @@ default:: `${_instance}`
 
 The namespace in which to deploy this component.
 
-Two intances of vault can be deployed in the same namespace, but the two instances will have access to each others unseal secrets.
+Two intances of OpenBao can be deployed in the same namespace, but the two instances will have access to each others unseal secrets.
 
 == `name`
 
@@ -23,11 +23,11 @@ The name of the deployed component.
 == `kubernetes_version`
 [horizontal]
 type:: string
-default:: `1.24`
+default:: `1.30`
 
 The Kubernetes version of the cluster the component is deployed to.
 This parameter is passed to Helm when rendering the Helm chart.
-The default chart version used by the component requires Kubernetes 1.20 or newer.
+The default chart version used by the component requires Kubernetes 1.30 or newer.
 
 We recommend setting this parameter based on the cluster's `kubernetesVersion` dynamic fact.
 
@@ -67,7 +67,7 @@ If you prefer using the Helm chart's generated `Route` on OpenShift, set `ingres
 
 [horizontal]
 type:: string
-default:: `vault.todo.tld`
+default:: `openbao.todo.tld`
 
 Defines the FQDN of the ingress, should be overwritten on the cluster level.
 
@@ -129,14 +129,14 @@ The resource requests and limits.
 type:: string
 default:: `OrderedReady`
 
-The `podManagementPolicy` for the vault statefulset
+The `podManagementPolicy` for the OpenBao StatefulSet
 
 WARNING: Setting this to `Parallel` might cause a race condition during initial setup.
 This parameter can't be changed after the initial deployment of the component.
 
 == `x_forwarded_for`
 
-This section allows users to configure how Vault uses the information in the `X-Forwarded-For` header in client connections.
+This section allows users to configure how OpenBao uses the information in the `X-Forwarded-For` header in client connections.
 
 === `authorized_addrs`
 
@@ -145,13 +145,13 @@ type:: string
 default:: `127.0.0.1/32`
 
 This parameter allows users to specify the list of source IP CIDRs for which an `X-Forwarded-For` header will be trusted.
-Since Vault doesn't accept the empty string as a valid option, we set the parameter to only trust `X-Forwarded-For` headers from `127.0.0.1/32` by default.
+Since OpenBao doesn't accept the empty string as a valid option, we set the parameter to only trust `X-Forwarded-For` headers from `127.0.0.1/32` by default.
 
 To avoid issues with parameter interpolation, multiple entries should be specified as a comma-separated list.
 
-If you want to use functionality in Vault which requires the real source IP of requests, you should set this parameter to a CIDR which includes the IPs of your ingress controller.
+If you want to use functionality in OpenBao which requires the real source IP of requests, you should set this parameter to a CIDR which includes the IPs of your ingress controller.
 
-Also see the https://www.vaultproject.io/docs/configuration/listener/tcp#x_forwarded_for_authorized_addrs[Vault documentation].
+Also see the https://openbao.org/docs/configuration/listener/tcp/#x_forwarded_for_authorized_addrs[OpenBao documentation].
 
 === `hop_skips`
 
@@ -162,7 +162,7 @@ default:: `"0"`
 The number of entries in the `X-Forwarded-For` header to skip.
 You may have to set this parameter, if you're deploying this component on a cluster which is behind multiple HTTP load balancers.
 
-See the https://www.vaultproject.io/docs/configuration/listener/tcp#x_forwarded_for_hop_skips[Vault documentation] for more details.
+See the https://openbao.org/docs/configuration/listener/tcp/#x_forwarded_for_hop_skips[OpenBao documentation] for more details.
 
 == `reject_not_authorized`
 
@@ -183,7 +183,7 @@ If you expect that all valid client connections will have an `X-Forwarded-For` h
 type:: bool
 default:: `"false"`
 
-By default, if there is no `X-Forwarded-For` header in a connection from an address which isn't in `x_forwarded_For_authorized_addrs` or if the header is empty, the client address will be used as-is.
+By default, if there is no `X-Forwarded-For` header in a connection from an address which isn't in `x_forwarded_for_authorized_addrs` or if the header is empty, the client address will be used as-is.
 
 If this parameter is set to `true`, such client connections are rejected instead.
 
@@ -194,9 +194,9 @@ If you expect that all valid client connections will have an `X-Forwarded-For` h
 
 [horizontal]
 type:: dict
-default:: https://github.com/projectsyn/component-vault/blob/master/class/defaults.yml[See `class/defaults.yml`]
+default:: https://github.com/containeroo/component-openbao/blob/master/class/defaults.yml[See `class/defaults.yml`]
 
-The configuration for Vault.
+The configuration for OpenBao.
 The configuration is applied with https://bank-vaults.dev/[bank-vaults].
 
 The component takes the provided config and uses it as a bank-vaults configuration.
@@ -244,15 +244,15 @@ auth_:
       listing_visibility: "unauth"
     config:
       url: ldaps://ldap.todo.com:636
-      binddn: "uid=vault-service,ou=Users,dc=todo,dc=com"
-      bindpass: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/ldap/password}
+      binddn: "uid=openbao-service,ou=Users,dc=todo,dc=com"
+      bindpass: ?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/ldap/password}
       userattr: uid
-      userdn: "ou=vault,ou=Service Access,ou=Views,dc=todo,dc=com"
+      userdn: "ou=openbao,ou=Service Access,ou=Views,dc=todo,dc=com"
       groupdn: "ou=Groups,dc=todo,dc=com"
       groupattr: cn
     groups:
-      Vault root:
-        policies: vault-root
+      OpenBao root:
+        policies: openbao-root
 ----
 
 This snippet is transformed into the following bank-vaults snippet
@@ -267,15 +267,15 @@ auth:
       listing_visibility: "unauth"
     config:
       url: ldaps://ldap.todo.com:636
-      binddn: "uid=vault-service,ou=Users,dc=todo,dc=com"
-      bindpass: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/ldap/password}
+      binddn: "uid=openbao-service,ou=Users,dc=todo,dc=com"
+      bindpass: ?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/ldap/password}
       userattr: uid
-      userdn: "ou=vault,ou=Service Access,ou=Views,dc=todo,dc=com"
+      userdn: "ou=openbao,ou=Service Access,ou=Views,dc=todo,dc=com"
       groupdn: "ou=Groups,dc=todo,dc=com"
       groupattr: cn
     groups:
-      Vault root:
-        policies: vault-root
+      OpenBao root:
+        policies: openbao-root
 ----
 
 === Example OIDC configuration
@@ -292,13 +292,13 @@ auth_:
       default_role: default
       namespace_in_state: true
       oidc_client_id: <CLIENT_ID>
-      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/oidc/client_secret}
+      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/oidc/client_secret}
       oidc_discovery_url: https://keycloak.example.com/auth/realms/example-realm
     roles:
       default:
         allowed_redirect_uris:
-          - https://${vault:ingress:host}/ui/vault/auth/oidc/oidc/callback
-          - https://${vault:ingress:host}/oidc/callback
+          - https://${openbao:ingress:host}/ui/vault/auth/oidc/oidc/callback
+          - https://${openbao:ingress:host}/oidc/callback
           - http://localhost:8250/oidc/callback
         bound_claims_type: string
         groups_claim: groups
@@ -321,13 +321,13 @@ auth:
       default_role: default
       namespace_in_state: true
       oidc_client_id: <CLIENT_ID>
-      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/oidc/client_secret}
+      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/oidc/client_secret}
       oidc_discovery_url: https://keycloak.example.com/auth/realms/example-realm
     roles:
       - name: default
         allowed_redirect_uris:
-          - https://${vault:ingress:host}/ui/vault/auth/oidc/oidc/callback
-          - https://${vault:ingress:host}/oidc/callback
+          - https://${openbao:ingress:host}/ui/vault/auth/oidc/oidc/callback
+          - https://${openbao:ingress:host}/oidc/callback
           - http://localhost:8250/oidc/callback
         bound_claims_type: string
         groups_claim: groups
@@ -347,7 +347,7 @@ Whether to do backups using k8up.
 [WARNING]
 .Manual Setup Required
 ====
-include::partial$vault-warning.adoc[]
+include::partial$openbao-warning.adoc[]
 ====
 
 == `backup.schedule`
@@ -368,7 +368,7 @@ default:: `5`
 
 [horizontal]
 type:: string
-default:: `?{vaultkv:${cluster:tenant}/${cluster:name}/vault/backup/password}`
+default:: `?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/backup/password}`
 
 The password for the backup.
 
@@ -381,9 +381,8 @@ default::
 [source,yaml]
 ----
 name: '${_instance}-backup'
-accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
-secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
+accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_access_key}'
+secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_secret_key}'
 ----
 
 The connection information for the S3 bucket to write to.
-

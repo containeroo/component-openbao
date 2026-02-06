@@ -1,5 +1,5 @@
-= Vault
+= OpenBao
 
-Vault is a Commodore component to manage vault.
+OpenBao is a Commodore component to manage OpenBao.
 
 See the xref:references/parameters.adoc[parameters] reference for further details.

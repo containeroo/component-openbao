@@ -1,6 +1,6 @@
 local kap = import 'lib/kapitan.libjsonnet';
 local inv = kap.inventory();
-local params = inv.parameters.vault;
+local params = inv.parameters.openbao;
 local argocd = import 'lib/argocd.libjsonnet';
 local instance = inv.parameters._instance;
 

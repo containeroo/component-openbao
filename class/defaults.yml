@@ -1,29 +1,29 @@
 parameters:
-  vault:
+  openbao:
     =_metadata:
       multi_instance: true
       multi_tenant: true
       multi_version: true
-    kubernetes_version: '1.24'
+    kubernetes_version: "1.30"
     images:
-      vault:
-        registry: docker.io
-        repository: hashicorp/vault
-        version: 1.19.5
+      openbao:
+        registry: quay.io
+        repository: openbao/openbao
+        version: v2.5.0
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
         version: v1.31.4
     charts:
-      vault:
-        source: https://helm.releases.hashicorp.com
-        version: 0.30.0
+      openbao:
+        source: https://openbao.github.io/openbao-helm
+        version: 0.25.0
     namespace: ${_instance}
     name: ${_instance}
     ingress:
       enabled: true
       annotations: {}
-      host: vault.todo.tld
+      host: openbao.todo.tld
     x_forwarded_for:
       authorized_addrs: "127.0.0.1/32"
       hop_skips: "0"
@@ -31,7 +31,7 @@ parameters:
       reject_not_present: "false"
     storage:
       size: 10G
-      class: ''
+      class: ""
     # Only change to maintain backwards compatibility
     podManagementPolicy: OrderedReady
     resources:
@@ -59,27 +59,27 @@ parameters:
           type: kubernetes
           roles:
             backup:
-              bound_service_account_names: '${vault:name}-backup'
-              bound_service_account_namespaces: ${vault:namespace}
+              bound_service_account_names: "${openbao:name}-backup"
+              bound_service_account_namespaces: ${openbao:namespace}
               policies: backup
               ttl: 1h
     backup:
       enabled: true
-      schedule: '*/13 * * * *'
+      schedule: "*/13 * * * *"
       keepjobs: 5
-      password: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/password}'
+      password: "?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/password}"
       bucket:
-        name: '${_instance}-backup'
-        accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
-        secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
+        name: "${_instance}-backup"
+        accesskey: "?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_access_key}"
+        secretkey: "?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_secret_key}"
     helm_values:
-      fullnameOverride: ${vault:name}
+      fullnameOverride: ${openbao:name}
       injector:
         enabled: false
       server:
         image:
-          repository: ${vault:images:vault:registry}/${vault:images:vault:repository}
-          tag: ${vault:images:vault:version}
+          repository: ${openbao:images:openbao:registry}/${openbao:images:openbao:repository}
+          tag: ${openbao:images:openbao:version}
         standalone:
           enabled: false
         service:
@@ -95,19 +95,19 @@ parameters:
         ha:
           enabled: true
           replicas: 3
-          apiAddr: https://${vault:ingress:host}
+          apiAddr: https://${openbao:ingress:host}
           raft:
             enabled: true
             config: |
               ui = true
               listener "tcp" {
                 tls_disable = true
-                address = "[::]:${vault:helm_values:server:service:targetPort}"
+                address = "[::]:${openbao:helm_values:server:service:targetPort}"
                 cluster_address = "[::]:8201"
-                x_forwarded_for_authorized_addrs = "${vault:x_forwarded_for:authorized_addrs}"
-                x_forwarded_for_hop_skips = "${vault:x_forwarded_for:hop_skips}"
-                x_forwarded_for_reject_not_authorized = "${vault:x_forwarded_for:reject_not_authorized}"
-                x_forwarded_for_reject_not_present = "${vault:x_forwarded_for:reject_not_present}"
+                x_forwarded_for_authorized_addrs = "${openbao:x_forwarded_for:authorized_addrs}"
+                x_forwarded_for_hop_skips = "${openbao:x_forwarded_for:hop_skips}"
+                x_forwarded_for_reject_not_authorized = "${openbao:x_forwarded_for:reject_not_authorized}"
+                x_forwarded_for_reject_not_present = "${openbao:x_forwarded_for:reject_not_present}"
               }
               listener "tcp" {
                 tls_disable = true
@@ -117,47 +117,47 @@ parameters:
                 }
               }
               storage "raft" {
-                path = "/vault/data"
+                path = "/openbao/data"
               }
               service_registration "kubernetes" {}
               telemetry {
                 disable_hostname = true
               }
-        resources: ${vault:resources}
+        resources: ${openbao:resources}
         dataStorage:
           enabled: true
-          size: ${vault:storage:size}
-          storageClass: ${vault:storage:class}
+          size: ${openbao:storage:size}
+          storageClass: ${openbao:storage:class}
           annotations:
-            k8up.io/backup: 'false'
+            k8up.io/backup: "false"
         ingress:
-          enabled: ${vault:ingress:enabled}
-          annotations: ${vault:ingress:annotations}
+          enabled: ${openbao:ingress:enabled}
+          annotations: ${openbao:ingress:annotations}
           hosts:
-            - host: ${vault:ingress:host}
+            - host: ${openbao:ingress:host}
               paths: ["/"]
           tls:
             - hosts:
-                - ${vault:ingress:host}
-              secretName: ${vault:name}-tls
+                - ${openbao:ingress:host}
+              secretName: ${openbao:name}-tls
         extraContainers:
-          - name: vault-unsealer
-            image: ${vault:images:bankvaults:registry}/${vault:images:bankvaults:repository}:${vault:images:bankvaults:version}
+          - name: openbao-unsealer
+            image: ${openbao:images:bankvaults:registry}/${openbao:images:bankvaults:repository}:${openbao:images:bankvaults:version}
             command: ["bank-vaults", "unseal", "--init"]
             args:
               - --secret-shares=1
               - --secret-threshold=1
               - --mode=k8s
-              - --k8s-secret-namespace=${vault:namespace}
-              - --k8s-secret-name=${vault:name}-seal
+              - --k8s-secret-namespace=${openbao:namespace}
+              - --k8s-secret-name=${openbao:name}-seal
               - --raft
               - --raft-leader-address
-              - http://${vault:name}-active:8200
+              - http://${openbao:name}-active:8200
             env:
               - name: VAULT_ADDR
                 value: http://127.0.0.1:8200
             ports:
-              - name: vault-metrics
+              - name: openbao-metrics
                 containerPort: 9200
               - name: unseal-metrics
                 containerPort: 9091

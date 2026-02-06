@@ -1,6 +1,6 @@
 = Install
 
-To install Vault using this component, there are a few things to decide and prepare.
+To install OpenBao using this component, there are a few things to decide and prepare.
 
 == Backups
 
@@ -15,30 +15,30 @@ backup:
   enabled: true
   schedule: '*/13 * * * *'
   keepjobs: 5
-  password: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/password}'
+  password: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/password}'
   bucket:
     name: '${_instance}-backup'
-    accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
-    secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
+    accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_access_key}'
+    secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/backup/s3_secret_key}'
 ----
 
 The backup configuration expects that there is a bucket with the name `+${INSTANCE}-backup+`.
 
-The three referenced secrets need to be added to the Vault instance associated with the Lieutenant instance managing the cluster on which this component is installed:
+The three referenced secrets need to be added to the OpenBao instance associated with the Lieutenant instance managing the cluster on which this component is installed:
 
-* The password to use for backup encryption in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/vault/${INSTANCE}/backup/password}+`
-* The access key for the bucket in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/vault/${INSTANCE}/backup/s3_access_key}+`
-* The secret key for the bucket in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/vault/${INSTANCE}/backup/s3_secret_key}+`
+* The password to use for backup encryption in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/openbao/${INSTANCE}/backup/password}+`
+* The access key for the bucket in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/openbao/${INSTANCE}/backup/s3_access_key}+`
+* The secret key for the bucket in key `+clusters/kv/${TENANT_ID}/${CLUSTER_ID}/openbao/${INSTANCE}/backup/s3_secret_key}+`
 
-Unless you explicitly configure multiple instances of the component, a single vault instance will be deployed.
-In this case, `+${INSTANCE}+` will simply be `+vault+`.
-See <<Multiple Instances>> for more details on how to deploy multiple Vault instances using this component.
+Unless you explicitly configure multiple instances of the component, a single OpenBao instance will be deployed.
+In this case, `+${INSTANCE}+` will simply be `+openbao+`.
+See <<Multiple Instances>> for more details on how to deploy multiple OpenBao instances using this component.
 
 == LDAP
 
-By default, only the backup service account and the root user has access to vault.
+By default, only the backup service account and the root user has access to openbao.
 You have the option to add more authentication methods and policies.
-Here is an example to add Vault access to all people in an LDAP group.
+Here is an example to add OpenBao access to all people in an LDAP group.
 
 [source,yaml]
 ----
@@ -51,14 +51,14 @@ config:
         listing_visibility: "unauth"
       config:
         url: ldaps://ldap.server.net:636
-        binddn: "uid=vault-service,ou=Special Users,dc=server,dc=net"
-        bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/ldappass}'
+        binddn: "uid=openbao-service,ou=Special Users,dc=server,dc=net"
+        bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/ldappass}'
         userattr: uid
-        userdn: "ou=vault,ou=Service Access,ou=Views,dc=server,dc=net"
+        userdn: "ou=openbao,ou=Service Access,ou=Views,dc=server,dc=net"
         groupdn: "ou=Groups,dc=vshn,dc=net"
         groupattr: cn
       groups:
-        vault-root:
+        openbao-root:
           policies: cluster-root
   policies_:
     cluster-root:
@@ -68,7 +68,7 @@ config:
         }
 ----
 
-Under the hood, this component uses `+bank-vaults+` to configure Vault.
+Under the hood, this component uses `+bank-vaults+` to configure OpenBao.
 https://banzaicloud.com/docs/bank-vaults/external-configuration/[This reference] provides more details on how to configure policies and authentication methods.
 
 [NOTE]
@@ -81,22 +81,22 @@ See the xref:references/parameters.adoc#_config[parameters reference] for more d
 
 == Lieutenant Integration
 
-If your Vault should interact with a Lieutenant instance, we need to add some policies and authentication methods.
+If your OpenBao should interact with a Lieutenant instance, we need to add some policies and authentication methods.
 See the how-to on xref:how-tos/lieutenant.adoc[integrating Lieutenant].
 
 == Multiple Instances
 
-This component is able to deploy multiple instances of Vault on the same cluster.
-You can deploy multiple instances of Vault by instantiating the component.
-The following configuration creates two Vault instances named `vault-prod` and `vault-test`.
+This component is able to deploy multiple instances of OpenBao on the same cluster.
+You can deploy multiple instances of OpenBao by instantiating the component.
+The following configuration creates two OpenBao instances named `openbao-prod` and `openbao-test`.
 
 [source,yaml]
 ----
 applications:
-  - vault as vault-prod
-  - vault as vault-test
+  - openbao as openbao-prod
+  - openbao as openbao-test
 parameters:
-  vault_prod:
+  openbao_prod:
     config:
       auth_:
         ldap:
@@ -106,14 +106,14 @@ parameters:
             listing_visibility: "unauth"
           config:
             url: ldaps://ldap.server.net:636
-            binddn: "uid=vault-service,ou=Special Users,dc=server,dc=net"
-            bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/ldappass}'
+            binddn: "uid=openbao-service,ou=Special Users,dc=server,dc=net"
+            bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/ldappass}'
             userattr: uid
-            userdn: "ou=vault,ou=Service Access,ou=Views,dc=server,dc=net"
+            userdn: "ou=openbao,ou=Service Access,ou=Views,dc=server,dc=net"
             groupdn: "ou=Groups,dc=vshn,dc=net"
             groupattr: cn
           groups:
-            vault-root:
+            openbao-root:
               policies: cluster-root
       policies_:
         cluster-root:
@@ -121,43 +121,43 @@ parameters:
             path "clusters/*" {
               capabilities = ["create", "read", "update", "delete", "list"]
             }
-  vault_test:
+  openbao_test:
     backup:
       enabled: false
 ----
 
-This will deploy a production vault with LDAP access named `vault-prod` to the namespace `vault-prod`.
-And a test vault without backups named `vault-test` to the namespace `vault-test`.
+This will deploy a production OpenBao with LDAP access named `openbao-prod` to the namespace `openbao-prod`.
+And a test OpenBao without backups named `openbao-test` to the namespace `openbao-test`.
 
 When instantiating a component the `+${INSTANCE}+` parameter is set to the instance's name.
-For the production Vault, the parameter is set to `vault-prod` and for the test Vault it's set to `vault-test`.
+For the production OpenBao, the parameter is set to `openbao-prod` and for the test OpenBao it's set to `openbao-test`.
 
-There are some things to consider when deploying multiple instances of Vault:
+There are some things to consider when deploying multiple instances of OpenBao:
 
 * No two instances are allowed to have the same name.
 This includes instances of other components.
 You should never name an instance the same name as other components.
-Naming your Vault instance `argocd` can break in unexpected ways.
-In general it's a good idea to prefix your instance with `vault-`.
+Naming your OpenBao instance `argocd` can break in unexpected ways.
+In general it's a good idea to prefix your instance with `openbao-`.
 * You can overwrite both the name and namespace of the instance.
 Two instances can either have the same name or be in the same namespace.
 If two instances have the same name and namespace bad things will break in unexpected ways.
 * If two instances are deployed to the same namespace, they can in principle read each others secrets.
-This means in practice you will want to put the production vault in a separate namespace.
+This means in practice you will want to put the production OpenBao in a separate namespace.
 
 More information on how component instantiation works can be found https://syn.tools/commodore/reference/architecture.html#_component_instantiation[here].
 
 
 == OIDC Integration
 
-Vault has the option to authenticate users through OIDC.
-This guide describes the manual setup of the Vault OIDC integration for a Vault instance which is associated with a Lieutenant instance.
+OpenBao has the option to authenticate users through OIDC.
+This guide describes the manual setup of the OpenBao OIDC integration for an OpenBao instance which is associated with a Lieutenant instance.
 
 [WARNING]
 ====
 It should also be possible to configure OIDC integration through the component.
-However, this requires a client secret which should be stored in Vault.
-We don't recommend configuring OIDC through the component when integrating Vault with Lieutenant as this will introduce a dependency for Vault on itself making setup and disaster recovery more difficult.
+However, this requires a client secret which should be stored in OpenBao.
+We don't recommend configuring OIDC through the component when integrating OpenBao with Lieutenant as this will introduce a dependency for OpenBao on itself making setup and disaster recovery more difficult.
 ====
 
 === Configure OIDC Provider
@@ -167,7 +167,7 @@ We don't recommend configuring OIDC through the component when integrating Vault
 This guide assumes that the OIDC provider is a Keycloak instance, but other OIDC providers should also work.
 ====
 
-We first need to create an OIDC client for Vault.
+We first need to create an OIDC client for OpenBao.
 
 . In the appropriate realm, create a OIDC client with:
 +
@@ -175,8 +175,8 @@ We first need to create an OIDC client for Vault.
 -----
 Access Type: Confidential
 Redirect URLs:
-  - https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback
-  - https://${VAULT_URL}/oidc/callback
+  - https://${OPENBAO_URL}/ui/vault/auth/oidc/oidc/callback
+  - https://${OPENBAO_URL}/oidc/callback
   - http://localhost:8250/oidc/callback
 -----
 
@@ -185,16 +185,16 @@ Redirect URLs:
 . Under the `Mappers` tab add a `User Client Role` mapper.
 Choose the created OIDC client as the `Client ID` and set the `Token Claim Name` to `groups`.
 
-. Open the Keycloak group or user that should get access to Vault and add them to the `syn-root` role of the created OIDC client.
+. Open the Keycloak group or user that should get access to OpenBao and add them to the `syn-root` role of the created OIDC client.
 
 . Copy client secret of the created OIDC client located in the `Credentials` tab of the client.
 
 
-=== Configure Vault
+=== Configure OpenBao
 
 ==== Via Project Syn
 
-. Store the client secret of the OIDC client in the Project Syn Vault for the cluster.
+. Store the client secret of the OIDC client in the Project Syn OpenBao for the cluster.
 
 . Add the following configuration to your component config
 +
@@ -210,13 +210,13 @@ auth_:
       default_role: default
       namespace_in_state: true
       oidc_client_id: <CLIENT_ID> <1>
-      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/oidc/client_secret} <2>
+      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/openbao/${_instance}/oidc/client_secret} <2>
       oidc_discovery_url: https://keycloak.example.com/auth/realms/example-realm <3>
     roles:
       default:
         allowed_redirect_uris: <4>
-          - https://${vault:ingress:host}/ui/vault/auth/oidc/oidc/callback
-          - https://${vault:ingress:host}/oidc/callback
+          - https://${openbao:ingress:host}/ui/vault/auth/oidc/oidc/callback
+          - https://${openbao:ingress:host}/oidc/callback
           - http://localhost:8250/oidc/callback
         bound_claims_type: string
         groups_claim: groups
@@ -225,14 +225,14 @@ auth_:
         user_claim: sub
 ----
 <1> The Client ID of the client that you configured in the previous section
-<2> A secret reference to the Client secret in the Project Syn Vault.
+<2> A secret reference to the Client secret in the Project Syn OpenBao.
 Adjust this to the secret where you stored the client secret in the previous step.
 <3> Adjust this to `+https://${KEYCLOAK_URL}/auth/realms/${REALM}+`
 <4> If necessary, update this parameter to match the redirect URIs that you configured in the Keycloak client
 
 ==== Manual configuration
 
-. Add a new OIDC Authenication Method in the Vault UI under the Access tab with the following configuration
+. Add a new OIDC Authenication Method in the OpenBao UI under the Access tab with the following configuration
 +
 [source]
 -----
@@ -243,22 +243,22 @@ OIDC client ID: ${CLIENT_ID}
 OIDC client Secret: ${CLIENT_SECRET}
 -----
 
-. Open a CLI connection to Vault, you can do this by clicking on the CLI icon in the UI, and enter
+. Open a CLI connection to OpenBao, you can do this by clicking on the CLI icon in the UI, and enter
 +
 [source]
 -----
-vault write auth/oidc/role/default \
-      allowed_redirect_uris="https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback" \
-      allowed_redirect_uris="https://${VAULT_URL}/oidc/callback" \
+bao write auth/oidc/role/default \
+      allowed_redirect_uris="https://${OPENBAO_URL}/ui/vault/auth/oidc/oidc/callback" \
+      allowed_redirect_uris="https://${OPENBAO_URL}/oidc/callback" \
       allowed_redirect_uris="http://localhost:8250/oidc/callback" \
       user_claim="sub" \
       policies="default" \
       groups_claim="groups"
 -----
 +
-At this point you should be able to login to Vault using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
+At this point you should be able to login to OpenBao using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
 
-. Under the Access tab in the Vault UI create a new group called `syn-root`.
+. Under the Access tab in the OpenBao UI create a new group called `syn-root`.
 The group should be of `Type: external` and add the `syn-root` policy to it (or any other policy you would like the OIDC users to have).
 
 . Open the newly created group and add an alias with name `syn-root` and OIDC as the `Auth Backend`

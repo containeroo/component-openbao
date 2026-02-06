@@ -1,8 +1,8 @@
-// template adding configuration for vault
+// template adding configuration for openbao
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local inv = kap.inventory();
-local params = inv.parameters.vault;
+local params = inv.parameters.openbao;
 
 local config =
   // This function transforms field `roles` of the passed object from an
@@ -61,7 +61,7 @@ local configSecret = kube.Secret(params.name) {
     namespace: params.namespace,
   },
   stringData: {
-    'vault-config.yml': std.manifestYamlDoc(config),
+    'openbao-config.yml': std.manifestYamlDoc(config),
   },
 };
 
@@ -74,7 +74,7 @@ local configurer = kube.Deployment('%s-configurer' % params.name) {
     template+: {
       spec+: {
         containers_+: {
-          configurer: kube.Container('vault-configurer') {
+          configurer: kube.Container('openbao-configurer') {
             image: '%s/%s:%s' % [ params.images.bankvaults.registry, params.images.bankvaults.repository, params.images.bankvaults.version ],
             command: [ 'bank-vaults', 'configure' ],
             args: [
@@ -82,7 +82,7 @@ local configurer = kube.Deployment('%s-configurer' % params.name) {
               '--k8s-secret-namespace=%s' % params.namespace,
               '--k8s-secret-name=%s-seal' % params.name,
               '--disable-metrics',
-              '--vault-config-file=/config/vault-config.yml',
+              '--vault-config-file=/config/openbao-config.yml',
             ],
             resources: {
               requests: { cpu: '100m', memory: '32Mi' },

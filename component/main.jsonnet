@@ -1,15 +1,15 @@
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local inv = kap.inventory();
-local params = inv.parameters.vault;
+local params = inv.parameters.openbao;
 
 local on_openshift =
   std.member([ 'openshift4', 'oke' ], inv.parameters.facts.distribution);
 
 local ingress =
   // NOTE(sg): The values for `service_name`, `service_port` and `pathType`
-  // are reverse engineered from the Helm chart's `server-ingress.yaml`
-  // template (version 0.27.0).
+  // are reverse engineered from the OpenBao Helm chart's `server-ingress.yaml`
+  // template (version 0.25.0).
   local service_name =
     local sn = params.helm_values.fullnameOverride;
     if

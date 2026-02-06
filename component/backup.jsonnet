@@ -3,7 +3,7 @@ local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 
 local inv = kap.inventory();
-local params = inv.parameters.vault;
+local params = inv.parameters.openbao;
 
 
 local backupSecret = kube.Secret('%s-backup-password' % params.name) {
@@ -47,7 +47,7 @@ local backupConfig = kube.ConfigMap('%s-backup' % params.name) {
     namespace: params.namespace,
   },
   data: {
-    'vault-agent-config.hcl': |||
+    'openbao-agent-config.hcl': |||
       exit_after_auth = false
       auto_auth {
           method "kubernetes" {
@@ -57,7 +57,7 @@ local backupConfig = kube.ConfigMap('%s-backup' % params.name) {
           }
           sink "file" {
               config = {
-                  path = "/home/vault/.vault-token"
+                  path = "/home/openbao/.vault-token"
                   mode = 0644
               }
           }
@@ -74,8 +74,8 @@ local backupSA = kube.ServiceAccount('%s-backup' % params.name) {
 
 local backupPod = backup.PreBackupPod(
   params.name,
-  '%s/%s:%s' % [ params.images.vault.registry, params.images.vault.repository, params.images.vault.version ],
-  'vault operator raft snapshot save /dev/stdout',
+  '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.version ],
+  'bao operator raft snapshot save /dev/stdout',
   fileext='.snapshot'
 ) {
   metadata+: {
@@ -86,23 +86,23 @@ local backupPod = backup.PreBackupPod(
       spec+: kube.PodSpec {
         containers_: {
           backup: kube.Container('backup') {
-            image: '%s/%s:%s' % [ params.images.vault.registry, params.images.vault.repository, params.images.vault.version ],
+            image: '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.version ],
             args: [
               'agent',
               '-config',
-              '/etc/vault/vault-agent-config.hcl',
+              '/etc/openbao/openbao-agent-config.hcl',
             ],
             env_: {
-              HOME: '/home/vault',
+              HOME: '/home/openbao',
               VAULT_ADDR: 'http://%s-active:8200' % params.name,
               SKIP_SETCAP: 'true',
             },
             volumeMounts_+: {
               config: {
-                mountPath: '/etc/vault/',
+                mountPath: '/etc/openbao/',
               },
               home: {
-                mountPath: '/home/vault',
+                mountPath: '/home/openbao',
               },
             },
             readinessProbe: {
@@ -110,7 +110,7 @@ local backupPod = backup.PreBackupPod(
                 command: [
                   'test',
                   '-e',
-                  '/home/vault/.vault-token',
+                  '/home/openbao/.vault-token',
                 ],
               },
               initialDelaySeconds: 3,

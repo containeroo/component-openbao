@@ -1,0 +1,8 @@
+`component-openbao` leverages k8up's application specific backups to create OpenBao snapshots.
+Restoring such a snapshot is only possible by providing the OpenBao https://openbao.org/docs/concepts/seal[unseal key] and https://openbao.org/docs/concepts/tokens/#root-tokens[root token].
+As these are sensitive secrets, they are not backed up as part of the component's automated backup process.
+
+When setting up OpenBao, you must store the OpenBao unseal key and root token in a safe location in order to be able to restore backups.
+
+In a running OpenBao instance, both of these secrets can be found in the `[instance name]-seal` secret in the OpenBao instance's namespace.
+In order to have a reliable OpenBao backup, this secret must be backed up separately to a safe location.
