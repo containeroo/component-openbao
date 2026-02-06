@@ -6,13 +6,6 @@ local params = inv.parameters.openbao;
 local on_openshift =
   std.member([ 'openshift4', 'oke' ], inv.parameters.facts.distribution);
 
-// The OpenBao Helm chart can render an Ingress on its own. Historically we also
-// rendered an Ingress for some distributions (OpenShift/OKE). If both are
-// enabled, ArgoCD will warn about a duplicate resource (same GVK/namespace/name).
-// Only render our Ingress when the chart Ingress is disabled.
-local helmIngressEnabled =
-  std.get(std.get(params.helm_values.server, 'ingress', {}), 'enabled', false);
-
 local ingress =
   // NOTE(sg): The values for `service_name`, `service_port` and `pathType`
   // are reverse engineered from the OpenBao Helm chart's `server-ingress.yaml`
@@ -63,5 +56,5 @@ local ingress =
 
 {
   '00_namespace': kube.Namespace(params.namespace),
-  [if on_openshift && params.ingress.enabled && !helmIngressEnabled then '90_ingress']: ingress,
+  [if on_openshift && params.ingress.enabled then '90_ingress']: ingress,
 }
