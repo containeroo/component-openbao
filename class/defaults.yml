@@ -78,7 +78,11 @@ parameters:
         enabled: false
       server:
         image:
-          repository: ${openbao:images:openbao:registry}/${openbao:images:openbao:repository}
+          # OpenBao helm chart uses separate `registry` and `repository` values.
+          # If we include the registry in `repository`, rendered manifests end up with
+          # duplicated prefixes like `quay.io/quay.io/openbao/openbao`.
+          registry: ${openbao:images:openbao:registry}
+          repository: ${openbao:images:openbao:repository}
           tag: ${openbao:images:openbao:version}
         standalone:
           enabled: false
