@@ -9,7 +9,8 @@ parameters:
       openbao:
         registry: quay.io
         repository: openbao/openbao
-        version: v2.5.0
+        # OpenBao image tags don't include a leading "v"
+        version: 2.5.0
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
