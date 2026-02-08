@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   update-golden:
-    # Only run for Renovate PRs. This avoids granting write perms to arbitrary PRs.
     if: github.actor == 'renovate[bot]' && startsWith(github.head_ref, 'renovate/')
     runs-on: ubuntu-latest
     steps:
@@ -49,4 +48,3 @@ jobs:
           git add tests/golden
           git commit -m "chore: update golden files"
           git push
-
