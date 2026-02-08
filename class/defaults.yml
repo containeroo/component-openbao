@@ -14,7 +14,7 @@ parameters:
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
-        version: v1.31.4
+        version: v1.32.1
     charts:
       openbao:
         source: https://openbao.github.io/openbao-helm
