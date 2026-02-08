@@ -39,10 +39,5 @@
     }
   ],
   "separateMinorPatch": true,
-  "postUpgradeTasks": {
-    "commands": ["make gen-golden-all"],
-    "fileFilters": ["tests/golden/**"],
-    "executionMode": "update"
-  },
   "suppressNotifications": ["artifactErrors"]
 }

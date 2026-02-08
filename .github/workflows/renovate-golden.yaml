@@ -1,0 +1,52 @@
+---
+name: Renovate Golden Update
+
+"on":
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  update-golden:
+    # Only run for Renovate PRs. This avoids granting write perms to arbitrary PRs.
+    if: github.actor == 'renovate[bot]' && startsWith(github.head_ref, 'renovate/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Checkout the PR branch so we can push a commit back to it.
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Regenerate golden files
+        run: make gen-golden-all
+
+      - name: Ensure only golden files changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --porcelain | grep -vE '^(..|\\?\\?) tests/golden/' | grep -q .; then
+            echo "Unexpected changes outside tests/golden/:"
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Commit and push (if needed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- tests/golden; then
+            echo "No golden changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add tests/golden
+          git commit -m "chore: update golden files"
+          git push
+
