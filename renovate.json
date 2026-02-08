@@ -1,20 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "ignorePaths": [
-    ".github/**"
-  ],
+  "extends": ["config:recommended"],
+  "ignorePaths": [".github/**"],
   "customManagers": [
     {
       "customType": "regex",
       "description": "OpenBao container image tag pinned in class/defaults.yml",
-      "managerFilePatterns": [
-        "/^class/defaults\\.yml$/"
-      ],
+      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
       "matchStrings": [
-        "openbao:\\s*\\n\\s*images:\\s*\\n\\s*openbao:\\s*\\n\\s*registry:\\s*quay\\.io\\s*\\n\\s*repository:\\s*openbao/openbao\\s*\\n(?:\\s*#.*\\n)*\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
+        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*images:\\s*\\n(?:[^\\n]*\\n)*?\\s*openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
       ],
       "depNameTemplate": "quay.io/openbao/openbao",
       "datasourceTemplate": "docker",
@@ -23,11 +17,9 @@
     {
       "customType": "regex",
       "description": "bank-vaults container image tag pinned in class/defaults.yml",
-      "managerFilePatterns": [
-        "/^class/defaults\\.yml$/"
-      ],
+      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
       "matchStrings": [
-        "openbao:\\s*\\n\\s*images:\\s*\\n\\s*bankvaults:\\s*\\n\\s*registry:\\s*ghcr\\.io\\s*\\n\\s*repository:\\s*bank-vaults/bank-vaults\\s*\\n\\s*version:\\s*(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*\\n"
+        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*images:\\s*\\n(?:[^\\n]*\\n)*?\\s*bankvaults:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*\\n"
       ],
       "depNameTemplate": "ghcr.io/bank-vaults/bank-vaults",
       "datasourceTemplate": "docker",
@@ -36,11 +28,9 @@
     {
       "customType": "regex",
       "description": "OpenBao Helm chart version pinned in class/defaults.yml",
-      "managerFilePatterns": [
-        "/^class/defaults\\.yml$/"
-      ],
+      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
       "matchStrings": [
-        "openbao:\\s*\\n\\s*charts:\\s*\\n\\s*openbao:\\s*\\n\\s*source:\\s*https://openbao\\.github\\.io/openbao-helm\\s*\\n\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
+        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*charts:\\s*\\n(?:[^\\n]*\\n)*?\\s*openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
       ],
       "depNameTemplate": "openbao",
       "datasourceTemplate": "helm",
@@ -50,15 +40,9 @@
   ],
   "separateMinorPatch": true,
   "postUpgradeTasks": {
-    "commands": [
-      "make gen-golden-all"
-    ],
-    "fileFilters": [
-      "tests/golden/**"
-    ],
+    "commands": ["make gen-golden-all"],
+    "fileFilters": ["tests/golden/**"],
     "executionMode": "update"
   },
-  "suppressNotifications": [
-    "artifactErrors"
-  ]
+  "suppressNotifications": ["artifactErrors"]
 }
