@@ -18,7 +18,7 @@ parameters:
     charts:
       openbao:
         source: https://openbao.github.io/openbao-helm
-        version: 0.25.2
+        version: 0.25.3
     namespace: ${_instance}
     name: ${_instance}
     ingress:
