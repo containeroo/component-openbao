@@ -80,7 +80,7 @@ spec:
               value: https://$(HOSTNAME).foobar-internal:8201
             - name: HOME
               value: /home/openbao
-          image: quay.io/openbao/openbao:2.5.0
+          image: quay.io/openbao/openbao:2.5.1
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
