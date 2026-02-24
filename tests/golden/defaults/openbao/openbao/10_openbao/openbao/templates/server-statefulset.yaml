@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/instance: foobar
         app.kubernetes.io/name: openbao
         component: server
-        helm.sh/chart: openbao-0.25.5
+        helm.sh/chart: openbao-0.25.6
     spec:
       affinity:
         podAntiAffinity:
