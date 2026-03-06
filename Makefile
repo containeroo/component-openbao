@@ -1,9 +1,3 @@
-#
-# File managed by ModuleSync - Do Not Edit
-#
-# Additional Makefiles can be added to `.sync.yml` in 'Makefile.includes'
-#
-
 MAKEFLAGS += --warn-undefined-variables
 SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
@@ -36,7 +30,7 @@ lint_adoc: ## Lint documentation
 	$(VALE_CMD) $(VALE_ARGS)
 
 .PHONY: lint_kubent
-lint_kubent: ## Lint deprecated Kubernetes API versions
+lint_kubent: ## Check for deprecated Kubernetes API versions
 	$(KUBENT_DOCKER) $(KUBENT_ARGS) -f $(KUBENT_FILES)
 
 .PHONY: format
@@ -58,7 +52,6 @@ docs-serve: ## Preview the documentation
 .PHONY: test
 test: commodore_args += -f tests/$(instance).yml
 test: .compile ## Compile the component
-
 .PHONY: gen-golden
 gen-golden: commodore_args += -f tests/$(instance).yml
 gen-golden: clean .compile ## Update the reference version for target `golden-diff`.

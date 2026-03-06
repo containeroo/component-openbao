@@ -3,42 +3,11 @@
   "extends": ["config:recommended"],
   "ignorePaths": [".github/**"],
   "labels": ["dependency"],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "description": "OpenBao container image tag pinned in class/defaults.yml",
-      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
-      "matchStrings": [
-        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*images:\\s*\\n(?:[^\\n]*\\n)*?\\s*openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
-      ],
-      "depNameTemplate": "quay.io/openbao/openbao",
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "semver"
-    },
-    {
-      "customType": "regex",
-      "description": "bank-vaults container image tag pinned in class/defaults.yml",
-      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
-      "matchStrings": [
-        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*images:\\s*\\n(?:[^\\n]*\\n)*?\\s*bankvaults:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*\\n"
-      ],
-      "depNameTemplate": "ghcr.io/bank-vaults/bank-vaults",
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "semver"
-    },
-    {
-      "customType": "regex",
-      "description": "OpenBao Helm chart version pinned in class/defaults.yml",
-      "managerFilePatterns": ["/^class\\/defaults\\.yml$/"],
-      "matchStrings": [
-        "openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*charts:\\s*\\n(?:[^\\n]*\\n)*?\\s*openbao:\\s*\\n(?:[^\\n]*\\n)*?\\s*version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*\\n"
-      ],
-      "depNameTemplate": "openbao",
-      "datasourceTemplate": "helm",
-      "registryUrlTemplate": "https://openbao.github.io/openbao-helm",
-      "versioningTemplate": "semver"
-    }
-  ],
   "separateMinorPatch": true,
-  "suppressNotifications": ["artifactErrors"]
+  "suppressNotifications": ["artifactErrors"],
+  "postUpgradeTasks": {
+    "commands": ["make gen-golden-all"],
+    "fileFilters": ["tests/golden/**"],
+    "executionMode": "update"
+  }
 }
