@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: openbao
   name: foobar
-  namespace: openbao
+  namespace: openshift
 spec:
   podManagementPolicy: OrderedReady
   replicas: 3
@@ -128,7 +128,7 @@ spec:
             - --secret-shares=1
             - --secret-threshold=1
             - --mode=k8s
-            - --k8s-secret-namespace=openbao
+            - --k8s-secret-namespace=openshift
             - --k8s-secret-name=foobar-seal
             - --raft
             - --raft-leader-address

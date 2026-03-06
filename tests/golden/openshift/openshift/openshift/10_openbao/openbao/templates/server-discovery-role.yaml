@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
   name: foobar-discovery-role
-  namespace: openbao
+  namespace: openshift
 rules:
   - apiGroups:
       - ''

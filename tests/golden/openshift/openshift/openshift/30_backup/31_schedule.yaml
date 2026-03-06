@@ -7,7 +7,7 @@ metadata:
     name: foobar-backup-password
   name: foobar-backup-password
 stringData:
-  password: t-silent-test-1234/c-green-test-1234/openbao/openbao/backup/password
+  password: t-silent-test-1234/c-green-test-1234/openbao/openshift/backup/password
 type: Opaque
 ---
 apiVersion: v1
@@ -19,15 +19,15 @@ metadata:
     name: foobar-backup-s3-credentials
   name: foobar-backup-s3-credentials
 stringData:
-  password: t-silent-test-1234/c-green-test-1234/openbao/openbao/backup/s3_secret_key
-  username: t-silent-test-1234/c-green-test-1234/openbao/openbao/backup/s3_access_key
+  password: t-silent-test-1234/c-green-test-1234/openbao/openshift/backup/s3_secret_key
+  username: t-silent-test-1234/c-green-test-1234/openbao/openshift/backup/s3_access_key
 type: Opaque
 ---
 apiVersion: k8up.io/v1
 kind: Schedule
 metadata:
   name: foobar
-  namespace: openbao
+  namespace: openshift
 spec:
   backend:
     repoPasswordSecretRef:
@@ -37,7 +37,7 @@ spec:
       accessKeyIDSecretRef:
         key: username
         name: foobar-backup-s3-credentials
-      bucket: openbao-backup
+      bucket: openshift-backup
       endpoint: null
       secretAccessKeySecretRef:
         key: password

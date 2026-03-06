@@ -34,4 +34,4 @@ metadata:
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
   name: foobar-config
-  namespace: openbao
+  namespace: openshift

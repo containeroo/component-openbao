@@ -5,7 +5,7 @@ metadata:
   labels:
     name: foobar-unseal
   name: foobar-unseal
-  namespace: openbao
+  namespace: openshift
 rules:
   - apiGroups:
       - ''

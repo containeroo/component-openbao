@@ -6,9 +6,11 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
-  name: foobar
-  namespace: openbao
+    openbao-internal: 'true'
+  name: foobar-internal
+  namespace: openshift
 spec:
+  clusterIP: None
   ports:
     - name: http
       port: 8200

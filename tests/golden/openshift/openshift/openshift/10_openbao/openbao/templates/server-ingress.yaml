@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
   name: foobar
-  namespace: openbao
+  namespace: openshift
 spec:
   rules:
     - host: openbao.todo.tld

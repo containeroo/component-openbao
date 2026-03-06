@@ -21,13 +21,13 @@ metadata:
   labels:
     name: foobar-backup
   name: foobar-backup
-  namespace: openbao
+  namespace: openshift
 ---
 apiVersion: k8up.io/v1
 kind: PreBackupPod
 metadata:
   name: foobar
-  namespace: openbao
+  namespace: openshift
 spec:
   backupCommand: bao operator raft snapshot save /dev/stdout
   fileExtension: .snapshot
@@ -82,4 +82,4 @@ metadata:
   labels:
     name: foobar-backup
   name: foobar-backup
-  namespace: openbao
+  namespace: openshift

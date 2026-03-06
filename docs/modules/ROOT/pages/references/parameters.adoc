@@ -38,6 +38,36 @@ type:: dictionary
 
 Dictionary containing the container images used by this component.
 
+=== `images.openbao`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+registry: quay.io
+repository: openbao/openbao
+tag: 2.5.1
+----
+
+Container image configuration for the OpenBao server.
+
+=== `images.bankvaults`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+registry: ghcr.io
+repository: bank-vaults/bank-vaults
+tag: v1.32.1
+----
+
+Container image configuration for the `bank-vaults` unsealer sidecar.
+
 == `charts`
 
 [horizontal]

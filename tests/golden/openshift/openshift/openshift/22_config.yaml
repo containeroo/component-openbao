@@ -6,14 +6,14 @@ metadata:
   labels:
     name: foobar
   name: foobar
-  namespace: openbao
+  namespace: openshift
 stringData:
   openbao-config.yml: |-
     "auth":
     - "path": "kubernetes"
       "roles":
       - "bound_service_account_names": "foobar-backup"
-        "bound_service_account_namespaces": "openbao"
+        "bound_service_account_namespaces": "openshift"
         "name": "backup"
         "policies": "backup"
         "ttl": "1h"
@@ -44,7 +44,7 @@ metadata:
   labels:
     name: foobar-configurer
   name: foobar-configurer
-  namespace: openbao
+  namespace: openshift
 spec:
   minReadySeconds: 30
   replicas: 1
@@ -66,7 +66,7 @@ spec:
       containers:
         - args:
             - --mode=k8s
-            - --k8s-secret-namespace=openbao
+            - --k8s-secret-namespace=openshift
             - --k8s-secret-name=foobar-seal
             - --disable-metrics
             - --vault-config-file=/config/openbao-config.yml

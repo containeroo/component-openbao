@@ -1,18 +1,17 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/instance: foobar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
-  name: foobar-discovery-rolebinding
-  namespace: openbao
+  name: foobar-server-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: foobar-discovery-role
+  kind: ClusterRole
+  name: system:auth-delegator
 subjects:
   - kind: ServiceAccount
     name: foobar
-    namespace: openbao
+    namespace: openshift

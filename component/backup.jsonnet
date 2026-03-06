@@ -74,7 +74,7 @@ local backupSA = kube.ServiceAccount('%s-backup' % params.name) {
 
 local backupPod = backup.PreBackupPod(
   params.name,
-  '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.version ],
+  '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.tag ],
   'bao operator raft snapshot save /dev/stdout',
   fileext='.snapshot'
 ) {
@@ -86,7 +86,7 @@ local backupPod = backup.PreBackupPod(
       spec+: kube.PodSpec {
         containers_: {
           backup: kube.Container('backup') {
-            image: '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.version ],
+            image: '%s/%s:%s' % [ params.images.openbao.registry, params.images.openbao.repository, params.images.openbao.tag ],
             args: [
               'agent',
               '-config',

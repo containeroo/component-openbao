@@ -6,8 +6,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: openbao
     helm.sh/chart: openbao-0.25.6
-  name: foobar-standby
-  namespace: openbao
+    openbao-active: 'true'
+  name: foobar-active
+  namespace: openshift
 spec:
   ports:
     - name: http
@@ -21,4 +22,4 @@ spec:
     app.kubernetes.io/instance: foobar
     app.kubernetes.io/name: openbao
     component: server
-    openbao-active: 'false'
+    openbao-active: 'true'

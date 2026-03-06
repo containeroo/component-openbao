@@ -75,7 +75,7 @@ local configurer = kube.Deployment('%s-configurer' % params.name) {
       spec+: {
         containers_+: {
           configurer: kube.Container('openbao-configurer') {
-            image: '%s/%s:%s' % [ params.images.bankvaults.registry, params.images.bankvaults.repository, params.images.bankvaults.version ],
+            image: '%s/%s:%s' % [ params.images.bankvaults.registry, params.images.bankvaults.repository, params.images.bankvaults.tag ],
             command: [ 'bank-vaults', 'configure' ],
             args: [
               '--mode=k8s',

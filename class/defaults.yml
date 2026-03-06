@@ -10,12 +10,11 @@ parameters:
       openbao:
         registry: quay.io
         repository: openbao/openbao
-        # OpenBao image tags don't include a leading "v"
-        version: 2.5.1
+        tag: 2.5.1
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
-        version: v1.32.1
+        tag: v1.32.1
     charts:
       openbao:
         source: https://openbao.github.io/openbao-helm
@@ -79,13 +78,7 @@ parameters:
       injector:
         enabled: false
       server:
-        image:
-          # OpenBao helm chart uses separate `registry` and `repository` values.
-          # If we include the registry in `repository`, rendered manifests end up with
-          # duplicated prefixes like `quay.io/quay.io/openbao/openbao`.
-          registry: ${openbao:images:openbao:registry}
-          repository: ${openbao:images:openbao:repository}
-          tag: ${openbao:images:openbao:version}
+        image: ${openbao:images:openbao}
         standalone:
           enabled: false
         service:
@@ -148,7 +141,7 @@ parameters:
               secretName: ${openbao:name}-tls
         extraContainers:
           - name: openbao-unsealer
-            image: ${openbao:images:bankvaults:registry}/${openbao:images:bankvaults:repository}:${openbao:images:bankvaults:version}
+            image: ${openbao:images:bankvaults:registry}/${openbao:images:bankvaults:repository}:${openbao:images:bankvaults:tag}
             command: ["bank-vaults", "unseal", "--init"]
             args:
               - --secret-shares=1
