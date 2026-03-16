@@ -5,14 +5,15 @@ metadata:
     app.kubernetes.io/instance: foobar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: openbao
-    helm.sh/chart: openbao-0.26.0
+    helm.sh/chart: openbao-0.26.1
     openbao-internal: 'true'
   name: foobar-internal
   namespace: openbao
 spec:
   clusterIP: None
   ports:
-    - name: http
+    - appProtocol: HTTP
+      name: http
       port: 8200
       targetPort: 8200
     - name: https-internal
