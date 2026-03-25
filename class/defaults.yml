@@ -10,7 +10,7 @@ parameters:
       openbao:
         registry: quay.io
         repository: openbao/openbao
-        tag: 2.5.1
+        tag: 2.5.2
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
