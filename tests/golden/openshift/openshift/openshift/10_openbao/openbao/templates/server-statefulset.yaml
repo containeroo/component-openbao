@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/instance: foobar
         app.kubernetes.io/name: openbao
         component: server
-        helm.sh/chart: openbao-0.26.2
+        helm.sh/chart: openbao-0.26.3
     spec:
       affinity:
         podAntiAffinity:
@@ -157,6 +157,8 @@ spec:
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 100
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: foobar
       terminationGracePeriodSeconds: 10
       volumes:
